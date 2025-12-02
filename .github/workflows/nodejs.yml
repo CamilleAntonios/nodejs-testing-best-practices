@@ -34,6 +34,7 @@ jobs:
   test-run:
     needs: build
     runs-on: ubuntu-latest
+    if: contains(join(github.event.commits.*.modified, ' '), 'example-application/')
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
