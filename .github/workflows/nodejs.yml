@@ -34,7 +34,6 @@ jobs:
   test-run:
     needs: build
     runs-on: ubuntu-latest
-    if: contains(join(github.event.commits.*.modified, ' '), 'example-application/')
     steps:
       - uses: actions/checkout@v4
       - name: Setup Node.js
@@ -55,14 +54,20 @@ jobs:
   integr-test-run:
     needs: build
     runs-on: ubuntu-latest
-    if: contains(join(github.event.commits.*.modified, ' '), 'recipes/')
     steps:
       - uses: actions/checkout@v4
+      - name: Get changed files
+        id: changed
+        uses: tj-actions/changed-files@v44
+
+
       - name: Setup Node.js
+        if: contains(steps.changed.outputs.all_changed_files, 'example-application/')
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - name: Cache node_modules
+        if: contains(steps.changed.outputs.all_changed_files, 'example-application/')
         uses: actions/cache@v4
         with:
           path: |
@@ -70,5 +75,6 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
-
-      - run: npm run test:nestjs
+      - name: Run tests
+        if: contains(steps.changed.outputs.all_changed_files, 'example-application/')
+        run: npm run test:nestjs
