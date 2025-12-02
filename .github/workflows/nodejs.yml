@@ -36,17 +36,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Get changed files
-        id: changed
-        uses: tj-actions/changed-files@v44
-
       - name: Setup Node.js
-        if: contains(steps.changed.outputs.all_changed_files, 'example-application/')
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - name: Cache node_modules
-        if: contains(steps.changed.outputs.all_changed_files, 'example-application/')
         uses: actions/cache@v4
         with:
           path: |
@@ -56,26 +50,19 @@ jobs:
             ${{ runner.os }}-node-
 
       - name: Run unit tests
-        if: contains(steps.changed.outputs.all_changed_files, 'example-application/')
         run: npm test
 
   integr-test-run:
-    needs: build
+    needs: test-run
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Get changed files
-        id: changed
-        uses: tj-actions/changed-files@v44
-
 
       - name: Setup Node.js
-        if: contains(steps.changed.outputs.all_changed_files, 'recipes/')
         uses: actions/setup-node@v4
         with:
           node-version-file: '.nvmrc'
       - name: Cache node_modules
-        if: contains(steps.changed.outputs.all_changed_files, 'recipes/')
         uses: actions/cache@v4
         with:
           path: |
@@ -84,5 +71,4 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - name: Run tests
-        if: contains(steps.changed.outputs.all_changed_files, 'recipes/')
         run: npm run test:nestjs

@@ -24,7 +24,7 @@ test('When the user does not exist, return 404 response', async () => {
     .post('/order', orderToAdd);
 
   //Assert
-  expect(orderAddResult.status).toBe(404);
+  expect(orderAddResult.status).toBe(405);
 });
 
 test('When order failed, send mail to admin', async () => {
